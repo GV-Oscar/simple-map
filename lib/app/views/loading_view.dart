@@ -25,8 +25,6 @@ class _LoadingViewState extends State<LoadingView> with WidgetsBindingObserver {
   }
 
   /// Se dispara cuando hay un cambió el estado del ciclo de vida de la aplicación.
-  
-
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     print('===> $state');
