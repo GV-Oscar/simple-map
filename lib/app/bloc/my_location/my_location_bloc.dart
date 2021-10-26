@@ -35,7 +35,7 @@ class MyLocationBloc extends Bloc<MyLocationEvent, MyLocationState> {
 
   /// Dejar de rastrear la ubicación del usuario.
   void stopTrackingUserLocation() {
-    _positionSubscription?.cancel();
+    _positionSubscription.cancel();
   }
 
   /// Se dispara cuando se detecta un cambio en la ubicación
