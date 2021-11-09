@@ -8,29 +8,25 @@ import 'package:simple_map/app/bloc/my_location/my_location_bloc.dart';
 import 'package:simple_map/app/widgets/widgets.dart';
 
 class MapaView extends StatefulWidget {
+  const MapaView({Key? key}) : super(key: key);
+
   @override
   State<MapaView> createState() => _MapaViewState();
 }
 
 class _MapaViewState extends State<MapaView> {
-  late MapBloc _mapBloc;
   late MyLocationBloc _locationBloc;
 
   @override
   void initState() {
     _locationBloc = BlocProvider.of<MyLocationBloc>(context);
-    _mapBloc = BlocProvider.of<MapBloc>(context);
-
     _locationBloc.startTrackingUserLocation();
-
-    // context.read<MyLocationBloc>().startTrackingUserLocation();
     super.initState();
   }
 
   @override
   void dispose() {
     _locationBloc.stopTrackingUserLocation();
-
     // BlocProvider.of<MyLocationBloc>(context).stopTrackingUserLocation();
     // context.read<MyLocationBloc>().stopTrackingUserLocation();
     super.dispose();
@@ -40,40 +36,56 @@ class _MapaViewState extends State<MapaView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocBuilder<MyLocationBloc, MyLocationState>(
-        builder: (context, state) {
-          return Center(
-            child: createMap(state),
-          );
-        },
+        builder: (context, state) => createMap(state),
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
-        children: [BtnMyLocation(onPressed: onClickBtnMyLocation)],
+        children: [
+          BtnMyLocation(onPressed: onClickBtnMyLocation),
+          BtnTrackUser(),
+          BtnMyRoute(onPressed: onClickBtnMyRoute),
+        ],
       ),
     );
   }
 
   Widget createMap(MyLocationState state) {
-    if (!state.existsLocation) return Text('Ubicando...');
+    // Si no hay una ubicación, indicar al usuario que se esta ubicando
+    if (!state.existsLocation) return const Center(child: Text('Ubicando...'));
 
-    final cameraPosition = CameraPosition(
+    final _mapBloc = BlocProvider.of<MapBloc>(context);
+
+    final initialCameraPosition = CameraPosition(
       target: state.lastLocation!,
       zoom: 15.0,
     );
 
-    Completer<GoogleMapController> _controller = Completer();
+    _mapBloc.add(OnLocationUpdate(state.lastLocation!));
 
     return GoogleMap(
-      initialCameraPosition: cameraPosition,
+      initialCameraPosition: initialCameraPosition,
       onMapCreated: _mapBloc.initializeMap,
-      compassEnabled: true,
+      compassEnabled: false,
       myLocationEnabled: true,
       myLocationButtonEnabled: false,
       zoomControlsEnabled: false,
+      polylines: _mapBloc.state.polylines!.values.toSet(),
+      onCameraMove: onCameraMove,
     );
   }
 
   onClickBtnMyLocation() {
+    final _mapBloc = BlocProvider.of<MapBloc>(context);
     _mapBloc.moveCamera(_locationBloc.lastLocation);
+  }
+
+  void onClickBtnMyRoute() {
+    final _mapBloc = BlocProvider.of<MapBloc>(context);
+    _mapBloc.add(OnTraceRoute());
+  }
+
+  void onCameraMove(CameraPosition position) {
+    final _mapBloc = BlocProvider.of<MapBloc>(context);
+    _mapBloc.add(OnMoveMap(position.target));
   }
 }

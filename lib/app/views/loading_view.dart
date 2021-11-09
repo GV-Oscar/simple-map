@@ -11,8 +11,7 @@ class LoadingView extends StatefulWidget {
 }
 
 class _LoadingViewState extends State<LoadingView> with WidgetsBindingObserver {
- 
- @override
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addObserver(this);
@@ -27,13 +26,17 @@ class _LoadingViewState extends State<LoadingView> with WidgetsBindingObserver {
   /// Se dispara cuando hay un cambió el estado del ciclo de vida de la aplicación.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    print('===> $state');
     if (state == AppLifecycleState.resumed) {
       if (await Geolocator.isLocationServiceEnabled()) {
-        Navigator.pushReplacement(context, navigatePageFadeIn(context, MapaView()));
+        try {
+          Navigator.pushReplacement(
+              context, navigatePageFadeIn(context, const MapaView()));
+        } catch (e) {
+          print('Ocurrio un error: $e');
+        }
+        // Navigator.pushReplacementNamed(context, 'mapa');
       }
     }
-    super.didChangeAppLifecycleState(state);
   }
 
   @override
@@ -68,21 +71,20 @@ class _LoadingViewState extends State<LoadingView> with WidgetsBindingObserver {
   }
 
   Future<String> checkGpsAndLocation(BuildContext context) async {
-
     // Permiso de ubicacion
     final permisoGPS = await Permission.location.isGranted;
     // Gps activado
     final gpsActivo = await Geolocator.isLocationServiceEnabled();
 
-    
-
     if (permisoGPS && gpsActivo) {
       // Ir a mapa
-      Navigator.pushReplacement(context, navigatePageFadeIn(context, MapaView()));
+      Navigator.pushReplacement(
+          context, navigatePageFadeIn(context, const MapaView()));
       return '';
     } else if (!permisoGPS) {
       // Ir a pedir permiso
-      Navigator.pushReplacement(context, navigatePageFadeIn(context, AccesoGpsView()));
+      Navigator.pushReplacement(
+          context, navigatePageFadeIn(context, AccesoGpsView()));
       return 'El permiso de GPS es necesario';
     } else {
       // Solicitar activar ubicacion
