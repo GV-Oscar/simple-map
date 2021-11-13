@@ -19,6 +19,21 @@ class OnTraceRoute extends MapEvent {
   OnTraceRoute();
 }
 
+/// Evento para controlar el trazo de ruta de destino
+class OnTraceDestinationRoute extends MapEvent {
+  /// Puntos de ubicación de la ruta.
+  final List<LatLng> points;
+
+  /// Distancia de recorrido de la ruta.
+  final double distance;
+
+  /// Duracion de recorrido de la ruta.
+  final double duration;
+
+  OnTraceDestinationRoute(
+      {required this.points, required this.distance, required this.duration});
+}
+
 /// Evento para controlar seguimiento de usuario.
 class OnTrackingUser extends MapEvent {
   OnTrackingUser();

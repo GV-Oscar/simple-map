@@ -26,6 +26,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
     // Registrar oyente para evento de movimiento de mapa
     on<OnMoveMap>(_onMoveMap);
+
+    // Registrar oyente para evento de trazo de ruta de destino
+    on<OnTraceDestinationRoute>(_onTraceDestinationRoute);
   }
 
   // Controlador de mapa
@@ -37,8 +40,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       width: 4,
       color: Colors.transparent);
 
-  Polyline _myOptimalRoute =
-      Polyline(polylineId: PolylineId('my_optimal_route'), width: 4);
+  Polyline _myRouteDestiny =
+      Polyline(polylineId: PolylineId('route_destiny'), 
+      width: 4,
+      color: Colors.black87);
 
   /// Inicializar mapa
   void initializeMap(GoogleMapController controller) {
@@ -56,10 +61,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   /// Mover camara
   void moveCamera(LatLng? latLng) {
     if (state.isMapReady && latLng != null) {
-      final cameraUpdate = CameraUpdate.newLatLng(latLng);
-      _mapCtrl.animateCamera(cameraUpdate);
-      // final cameraPosition = CameraPosition(target: latLng, zoom: 16);
-      // _mapCtrl.animateCamera(CameraUpdate.newCameraPosition(camera));
+      // final cameraUpdate = CameraUpdate.newLatLng(latLng);
+      // _mapCtrl.animateCamera(cameraUpdate);
+      final cameraPosition = CameraPosition(target: latLng, zoom: 15);
+      _mapCtrl.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
     }
   }
 
@@ -97,8 +102,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     final currentPolylines = state.polylines;
     currentPolylines!['my_personal_route'] = _myPersonalRoute;
 
-    emit(state.copyWith(
-        isTraceRoute: !state.isTraceRoute, polylines: currentPolylines));
+    emit(state.copyWith(isTraceRoute: !state.isTraceRoute, polylines: currentPolylines));
   }
 
   /// Se dispara cuando se recibe el evento de rastrear usuario
@@ -114,9 +118,23 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   /// Se dispara cuando se recibe un evento de movimiento en el mapa
   FutureOr<void> _onMoveMap(OnMoveMap event, Emitter<MapState> emit) {
-    print('_onMoveMap ${event.centerLocation}');
+    //print('_onMoveMap ${event.centerLocation}');
     if (event.centerLocation != null) {
       emit(state.copyWith(centerLocation: event.centerLocation));
     }
+  }
+
+  /// Se dispara cuando se recibe un evento de trazar ruta de destino.
+  FutureOr<void> _onTraceDestinationRoute(OnTraceDestinationRoute event, Emitter<MapState> emit) {
+    print('_onTraceDestinationRoute');
+    _myRouteDestiny = _myRouteDestiny.copyWith(pointsParam: event.points);
+
+    final currentPolylines = state.polylines;
+    currentPolylines!['route_destiny'] = _myRouteDestiny;
+
+    emit(state.copyWith(
+      polylines: currentPolylines
+      // TODO: Marcadores personalizados
+    ));
   }
 }

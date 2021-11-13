@@ -35,8 +35,18 @@ class _MapaViewState extends State<MapaView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<MyLocationBloc, MyLocationState>(
-        builder: (context, state) => createMap(state),
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+          BlocBuilder<MyLocationBloc, MyLocationState>(
+            builder: (context, state) => createMap(context, state),
+          ),
+
+          // hacer el toggle cuando la busqueda es manual, en el mapa.
+          Positioned(top: 30, child: Searchbar()),
+
+          MarkerManual()
+        ],
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -49,28 +59,33 @@ class _MapaViewState extends State<MapaView> {
     );
   }
 
-  Widget createMap(MyLocationState state) {
+  Widget createMap(BuildContext context, MyLocationState state) {
+    final size = MediaQuery.of(context).size;
     // Si no hay una ubicación, indicar al usuario que se esta ubicando
     if (!state.existsLocation) return const Center(child: Text('Ubicando...'));
 
     final _mapBloc = BlocProvider.of<MapBloc>(context);
 
     final initialCameraPosition = CameraPosition(
-      target: state.lastLocation!,
-      zoom: 15.0,
-    );
+        target: state.lastLocation!,
+        //zoom: 15.0,
+        zoom: 16);
 
     _mapBloc.add(OnLocationUpdate(state.lastLocation!));
 
-    return GoogleMap(
-      initialCameraPosition: initialCameraPosition,
-      onMapCreated: _mapBloc.initializeMap,
-      compassEnabled: false,
-      myLocationEnabled: true,
-      myLocationButtonEnabled: false,
-      zoomControlsEnabled: false,
-      polylines: _mapBloc.state.polylines!.values.toSet(),
-      onCameraMove: onCameraMove,
+    return BlocBuilder<MapBloc, MapState>(
+      builder: (_, __) {
+        return GoogleMap(
+          initialCameraPosition: initialCameraPosition,
+          onMapCreated: _mapBloc.initializeMap,
+          compassEnabled: false,
+          myLocationEnabled: true,
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: false,
+          polylines: _mapBloc.state.polylines!.values.toSet(),
+          onCameraMove: onCameraMove,
+        );
+      },
     );
   }
 
