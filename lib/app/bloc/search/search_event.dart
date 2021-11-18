@@ -9,3 +9,11 @@ class OnFindManualLocation extends SearchEvent {
 
   OnFindManualLocation(this.isFindManualLocation);
 }
+
+/// Evento para controlar cuando se va agregar una búsqueda al historial
+class OnAddSearchToHistory extends SearchEvent {
+  /// Resultado de busqueda
+  final SearchResult result;
+
+  OnAddSearchToHistory(this.result);
+}

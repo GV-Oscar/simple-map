@@ -11,16 +11,21 @@ class SearchResult {
   /// Coordenadas de latitud y longitud del lugar
   final LatLng? latLng;
 
+  /// ID de lugar
+  final String? placeId;
+
   /// Nombre del lugar
   final String? placeName;
 
   /// Descripcion del lugar
   final String? placeDescription;
 
-  SearchResult(
-      {this.isSearchCanceled = false,
-      this.isManualSearch = false,
-      this.latLng,
-      this.placeName,
-      this.placeDescription});
+  SearchResult({
+    this.placeId,
+    this.isSearchCanceled = false,
+    this.isManualSearch = false,
+    this.latLng,
+    this.placeName,
+    this.placeDescription
+  });
 }

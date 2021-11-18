@@ -9,8 +9,8 @@ class Searchbar extends StatelessWidget {
           return Container();
         }
         return FadeInDown(
-          duration: Duration(milliseconds: 300),
-          child: buildSearchbar(context));
+            duration: Duration(milliseconds: 300),
+            child: buildSearchbar(context));
       },
     );
   }
@@ -24,8 +24,14 @@ class Searchbar extends StatelessWidget {
         width: size.width,
         child: GestureDetector(
           onTap: () async {
-            final result = await showSearch(context: context, delegate: SearchDestination());
-            findResult(context, result!);
+            final location = BlocProvider.of<MyLocationBloc>(context).state.lastLocation;
+            final historical = BlocProvider.of<SearchBloc>(context).state.historical;
+
+            if (location != null) {
+              final result = await showSearch(context: context,
+                  delegate: SearchDestination(location, historical));
+              findResult(context, result!);
+            }
           },
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -46,13 +52,46 @@ class Searchbar extends StatelessWidget {
     );
   }
 
-  void findResult(BuildContext context, SearchResult result) {
+  Future<void> findResult(BuildContext context, SearchResult result) async {
     if (result.isSearchCanceled) return;
 
     if (result.isManualSearch) {
       final blocSearch = BlocProvider.of<SearchBloc>(context);
       blocSearch.add(OnFindManualLocation(true));
       return;
+    }
+
+    // TODO: Calcular ruta
+    searchAlert(context);
+    final trafficService = TrafficService();
+    final mapBloc = BlocProvider.of<MapBloc>(context);
+    final locationBloc = BlocProvider.of<MyLocationBloc>(context);
+
+    final origin = locationBloc.state.lastLocation;
+    final destiny = result.latLng;
+
+    if (origin != null && destiny != null) {
+      final trafficResponse =
+          await trafficService.getNavigationRoute(origin, destiny);
+
+      if (trafficResponse != null && trafficResponse.routes.isNotEmpty) {
+        final geometry = trafficResponse.routes[0].geometry;
+        final duration = trafficResponse.routes[0].duration;
+        final distance = trafficResponse.routes[0].distance;
+
+        final polyline =
+            Poly.Polyline.Decode(encodedString: geometry, precision: 6);
+        final List<LatLng> points =
+            polyline.decodedCoords.map((e) => LatLng(e[0], e[1])).toList();
+
+        mapBloc.add(OnTraceDestinationRoute(points: points, distance: distance, duration: duration));
+
+        Navigator.of(context).pop();
+
+        // Agregar al historial 
+        final searchBloc = BlocProvider.of<SearchBloc>(context);
+        searchBloc.add(OnAddSearchToHistory(result));
+      }
     }
   }
 }
