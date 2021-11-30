@@ -1,16 +1,21 @@
-# simple_map
+# Simple Map
 
-A new Flutter project.
+Aplicación simple de mapas.
 
-## Getting Started
+## Funcionalidades
+- Seguimiento de usuairo
+- Trazo de rutas
+- Busqueda de direcciones con API Geocoding de Mapbox
+- Busqueda de coordenadas con API Reverse Geocoding de Mapbox
+- Marcadores personalizados.
 
-This project is a starting point for a Flutter application.
+<img src="https://firebasestorage.googleapis.com/v0/b/gvoscar-4686d.appspot.com/o/res%2FSimple_Map.gif?alt=media&token=b4cda6cb-944a-4e8c-8363-a917eb7c5bae" width="540" height="690" />
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## Acerca de
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Esta aplicación se desarrollo en Flutter y es compatible para IOS y Android, se utiliza API de Mapas de Goolge y API de Mapbox para las direcciones de lugares.
+
+## [powered by Oscar Giraldo](https://www.linkedin.com/in/gvoscar20/)
+
+¿Tienes una idea de negocio, necesitas un PMV para validar tu Nicho y comprobar tu Tracción? Llegaste al lugar indicado. [Somos Pasili.com](https://www.pasili.com/) | Expertos en Soluciones Tecnológicas a tu Medida.

@@ -105,7 +105,7 @@ class _BuildMarker extends StatelessWidget {
         //final destinyName = reverseGeocodingResponse.features[0].text;
         final destinyName = reverseGeocodingResponse.features[0].placeName;
 
-        // Decode an encoded string to a list of coordinates
+        // Decode an enmocoded string to a list of coordinates
         final polyline =
             Poly.Polyline.Decode(encodedString: geometry, precision: 6);
         final List<LatLng> points =
