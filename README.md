@@ -9,7 +9,7 @@ Aplicación simple de mapas.
 - Busqueda de coordenadas con API Reverse Geocoding de Mapbox
 - Marcadores personalizados.
 
-<img src="https://firebasestorage.googleapis.com/v0/b/gvoscar-4686d.appspot.com/o/res%2FSimple_Map.gif?alt=media&token=2f269c36-affc-4996-9705-ac527369823d" width="540" height="690" />
+<img src="https://firebasestorage.googleapis.com/v0/b/gvoscar-4686d.appspot.com/o/res%2Fsimple_map_30s_2.gif?alt=media&token=72932c95-7f36-4833-a590-c8181204d435" width="540" height="690" />
 
 
 ## Acerca de
