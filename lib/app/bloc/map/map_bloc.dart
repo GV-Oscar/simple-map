@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:meta/meta.dart';
+import 'package:simple_map/app/helpers/helpers.dart';
 import 'package:simple_map/app/themes/uber_map_style.dart';
 
 part 'map_event.dart';
@@ -125,16 +126,54 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   }
 
   /// Se dispara cuando se recibe un evento de trazar ruta de destino.
-  FutureOr<void> _onTraceDestinationRoute(OnTraceDestinationRoute event, Emitter<MapState> emit) {
+  FutureOr<void> _onTraceDestinationRoute(OnTraceDestinationRoute event, Emitter<MapState> emit) async {
     print('_onTraceDestinationRoute');
-    _myRouteDestiny = _myRouteDestiny.copyWith(pointsParam: event.points);
 
+    // Ruta con polylines
+    _myRouteDestiny = _myRouteDestiny.copyWith(pointsParam: event.points);
     final currentPolylines = state.polylines;
-    currentPolylines!['route_destiny'] = _myRouteDestiny;
+    currentPolylines['route_destiny'] = _myRouteDestiny;
+
+    // Iconos de marcadores
+    // final iconOrigin = await getAssetImageMarker();
+    final iconOrigin = await getMarkerOriginIcon(event.duration.toInt());
+    //final iconDestiny = await getNetworkImageMarker();
+    final iconDestiny = await getMarkerDestinyIcon(event.destinyName, event.distance);
+
+    // Marcadores
+    final markerOrigin = Marker(
+      anchor: Offset(0.05, 0.92),
+      markerId: MarkerId('origin'),
+      position: event.points[0],
+      icon: iconOrigin,
+      infoWindow: InfoWindow(
+        title: 'Mi Ubicación',
+        snippet: 'Duración recorrido ${(event.duration / 60).floor()} min' // la duracion esta en segundos, por eso se divide en 60 y obtenemos minutos
+      )
+    );
+
+    double km = event.distance / 1000; // lo pasamos a kilometros
+    km = (km * 100).floorToDouble();
+    km = (km / 100);
+
+    final markerDestiny = Marker(
+      anchor: Offset(0.05, 0.92),
+      markerId: MarkerId('destiny'),
+      position: event.points[event.points.length -1],
+      icon: iconDestiny,
+      infoWindow: InfoWindow(
+        title: event.destinyName,
+        snippet: 'Distancia recorrido $km km'
+      )
+    );
+
+    final currenMarkers = {...state.markers};
+    currenMarkers['origin'] = markerOrigin;
+    currenMarkers['destiny'] = markerDestiny;
 
     emit(state.copyWith(
-      polylines: currentPolylines
-      // TODO: Marcadores personalizados
+      polylines: currentPolylines,
+      markers: currenMarkers
     ));
   }
 }

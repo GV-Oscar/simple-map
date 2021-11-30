@@ -82,8 +82,9 @@ class _MapaViewState extends State<MapaView> {
           myLocationEnabled: true,
           myLocationButtonEnabled: false,
           zoomControlsEnabled: false,
-          polylines: _mapBloc.state.polylines!.values.toSet(),
           onCameraMove: onCameraMove,
+          polylines: _mapBloc.state.polylines.values.toSet(),
+          markers: _mapBloc.state.markers.values.toSet(),
         );
       },
     );

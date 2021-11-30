@@ -30,8 +30,11 @@ class OnTraceDestinationRoute extends MapEvent {
   /// Duracion de recorrido de la ruta.
   final double duration;
 
-  OnTraceDestinationRoute(
-      {required this.points, required this.distance, required this.duration});
+  /// Nombre del destino
+  final String destinyName;
+
+  /// Crear nuevo evento para trazar ruta de destino
+  OnTraceDestinationRoute({required this.points, required this.distance, required this.duration, required this.destinyName});
 }
 
 /// Evento para controlar seguimiento de usuario.

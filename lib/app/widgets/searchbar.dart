@@ -24,11 +24,14 @@ class Searchbar extends StatelessWidget {
         width: size.width,
         child: GestureDetector(
           onTap: () async {
-            final location = BlocProvider.of<MyLocationBloc>(context).state.lastLocation;
-            final historical = BlocProvider.of<SearchBloc>(context).state.historical;
+            final location =
+                BlocProvider.of<MyLocationBloc>(context).state.lastLocation;
+            final historical =
+                BlocProvider.of<SearchBloc>(context).state.historical;
 
             if (location != null) {
-              final result = await showSearch(context: context,
+              final result = await showSearch(
+                  context: context,
                   delegate: SearchDestination(location, historical));
               findResult(context, result!);
             }
@@ -78,17 +81,22 @@ class Searchbar extends StatelessWidget {
         final geometry = trafficResponse.routes[0].geometry;
         final duration = trafficResponse.routes[0].duration;
         final distance = trafficResponse.routes[0].distance;
+        final destinyName = result.placeName;
 
         final polyline =
             Poly.Polyline.Decode(encodedString: geometry, precision: 6);
         final List<LatLng> points =
             polyline.decodedCoords.map((e) => LatLng(e[0], e[1])).toList();
 
-        mapBloc.add(OnTraceDestinationRoute(points: points, distance: distance, duration: duration));
+        mapBloc.add(OnTraceDestinationRoute(
+            points: points,
+            distance: distance,
+            duration: duration,
+            destinyName: destinyName ?? ''));
 
         Navigator.of(context).pop();
 
-        // Agregar al historial 
+        // Agregar al historial
         final searchBloc = BlocProvider.of<SearchBloc>(context);
         searchBloc.add(OnAddSearchToHistory(result));
       }

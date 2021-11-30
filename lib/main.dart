@@ -6,6 +6,7 @@ import 'package:simple_map/app/bloc/search/search_bloc.dart';
 import 'package:simple_map/app/views/acceso_gps_view.dart';
 import 'package:simple_map/app/views/loading_view.dart';
 import 'package:simple_map/app/views/mapa_view.dart';
+import 'package:simple_map/app/views/test_marker_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Simple Map',
+        // home: TestMarkerPage(),
         home: LoadingView(),
         routes: {
           'mapa': (_) => MapaView(),

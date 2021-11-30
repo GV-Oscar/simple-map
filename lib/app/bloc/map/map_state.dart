@@ -12,31 +12,38 @@ class MapState {
   final bool isTrackingUser;
 
   /// Polilineas de las rutas.
-  final Map<String, Polyline>? polylines;
+  final Map<String, Polyline> polylines;
 
   /// Ubicacion central en el mapa.
   final LatLng? centerLocation;
+
+  /// Marcadores
+  final Map<String, Marker> markers;
 
   MapState({
     this.isMapReady = false,
     this.isTraceRoute = false,
     this.isTrackingUser = false,
     this.centerLocation,
-    Map<String, Polyline>? polylines
+    Map<String, Polyline>? polylines,
+    Map<String, Marker>? markers
   })
-  : polylines = polylines ?? <String, Polyline>{};
+    : polylines = polylines ?? <String, Polyline>{},
+      markers = markers ?? <String, Marker>{};
 
   MapState copyWith({
     bool? isMapReady,
     bool? isTraceRoute,
     bool? isTrackingUser,
     LatLng? centerLocation,
-    Map<String, Polyline>? polylines
+    Map<String, Polyline>? polylines,
+    Map<String, Marker>? markers
   }) => MapState(
-    isMapReady: isMapReady ?? this.isMapReady,
-    isTraceRoute: isTraceRoute ?? this.isTraceRoute,
-    isTrackingUser: isTrackingUser ?? this.isTrackingUser,
-    centerLocation: centerLocation ?? this.centerLocation,
-    polylines: polylines ?? this.polylines
-  );
+      isMapReady: isMapReady ?? this.isMapReady,
+      isTraceRoute: isTraceRoute ?? this.isTraceRoute,
+      isTrackingUser: isTrackingUser ?? this.isTrackingUser,
+      centerLocation: centerLocation ?? this.centerLocation,
+      polylines: polylines ?? this.polylines,
+      markers: markers ?? this.markers
+    );
 }

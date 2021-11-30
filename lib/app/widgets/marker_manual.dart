@@ -86,13 +86,24 @@ class _BuildMarker extends StatelessWidget {
 
     if (origin != null && destiny != null) {
       searchAlert(context);
+
+      // Obtener ruta
       final trafficResponse =
           await trafficService.getNavigationRoute(origin, destiny);
 
-      if (trafficResponse != null && trafficResponse.code == 'Ok') {
+      // Obtener información del destino
+      final reverseGeocodingResponse =
+          await trafficService.getPlaceByCoordinates(destiny);
+
+      if (trafficResponse != null &&
+          trafficResponse.code == 'Ok' &&
+          reverseGeocodingResponse != null &&
+          reverseGeocodingResponse.features.isNotEmpty) {
         final geometry = trafficResponse.routes[0].geometry;
         final duration = trafficResponse.routes[0].duration;
         final distance = trafficResponse.routes[0].distance;
+        //final destinyName = reverseGeocodingResponse.features[0].text;
+        final destinyName = reverseGeocodingResponse.features[0].placeName;
 
         // Decode an encoded string to a list of coordinates
         final polyline =
@@ -100,13 +111,29 @@ class _BuildMarker extends StatelessWidget {
         final List<LatLng> points =
             polyline.decodedCoords.map((e) => LatLng(e[0], e[1])).toList();
 
+        // Disparar evento para trazar ruta.
         mapBloc.add(OnTraceDestinationRoute(
-            points: points, distance: distance, duration: duration));
+            points: points,
+            distance: distance,
+            duration: duration,
+            destinyName: destinyName));
 
         Navigator.of(context).pop();
 
-        final blocSearch = BlocProvider.of<SearchBloc>(context);
-        blocSearch.add(OnFindManualLocation(false));
+        final searchBloc = BlocProvider.of<SearchBloc>(context);
+        searchBloc.add(OnFindManualLocation(false));
+
+        // Agregar al historial
+        final str = destinyName.split(',');
+        final placeName = reverseGeocodingResponse.features[0].text;
+        final placeDescription = '${str[2]}, ${str[3]}, ${str[4]}';
+        final result = SearchResult(
+            isSearchCanceled: false,
+            isManualSearch: false,
+            latLng: destiny,
+            placeName: placeName,
+            placeDescription: placeDescription);
+        searchBloc.add(OnAddSearchToHistory(result));
       }
     }
   }
